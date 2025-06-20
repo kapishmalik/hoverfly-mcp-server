@@ -23,19 +23,6 @@ java -jar target/hoverfly-mcp-server-0.0.1-SNAPSHOT.jar
 
 ---
 
-## 🐳 Docker Setup
-
-Run using Docker:
-
-```bash
-docker run -i --rm -p 8500:8500 -p 8888:8888 docker.io/kapish88/hoverfly-mcp-server
-```
-
-- `8500`: Hoverfly proxy port (for mocked service clients)
-- `8888`: Hoverfly admin port (for API/mocking configuration)
-
----
-
 ## ⚙️ Configuring as an MCP Server (with Docker)
 
 To use this server with an AI assistant that supports Model Context Protocol (MCP), add the following to your `.mcp.json` or `mcp.config.json`:
