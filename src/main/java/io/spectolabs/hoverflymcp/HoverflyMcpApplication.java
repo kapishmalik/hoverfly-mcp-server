@@ -1,6 +1,8 @@
 package io.spectolabs.hoverflymcp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.specto.hoverfly.junit.api.HoverflyClient;
+import io.spectolabs.hoverflymcp.tool.HoverflyService;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.boot.SpringApplication;
@@ -9,21 +11,22 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class HoverflyMcpApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(HoverflyMcpApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(HoverflyMcpApplication.class, args);
+  }
 
-    @Bean
-    public ToolCallbackProvider hoverflyTools(HoverflyService hoverflyService) {
-        return MethodToolCallbackProvider.builder().toolObjects(hoverflyService).build();
-    }
+  @Bean
+  public ToolCallbackProvider hoverflyTools(HoverflyService hoverflyService) {
+    return MethodToolCallbackProvider.builder().toolObjects(hoverflyService).build();
+  }
 
-    @Bean
-    public HoverflyClient hoverflyClient() {
-       return HoverflyClient.custom()
-                .scheme("http")
-                .host("localhost")
-                .port(8888)
-                .build();
-    }
+  @Bean
+  public HoverflyClient hoverflyClient() {
+    return HoverflyClient.custom().scheme("http").host("localhost").port(8888).build();
+  }
+
+  @Bean
+  public ObjectMapper objectMapper() {
+    return new ObjectMapper();
+  }
 }
