@@ -45,7 +45,8 @@ public class HoverflyService {
                   .proxyPort(8500),
               HoverflyMode.SIMULATE);
       hoverfly.start();
-      return HoverflyResponse.ok("Hoverfly started in webserver mode on port 8500");
+      return HoverflyResponse.ok(
+          "Hoverfly started in webserver mode on port 8500 with no mocked APIs");
     }
     return HoverflyResponse.ok("Hoverfly already running");
   }
@@ -55,7 +56,7 @@ public class HoverflyService {
     if (hoverfly != null) {
       hoverfly.close();
       hoverfly = null;
-      return HoverflyResponse.ok("Hoverfly stopped");
+      return HoverflyResponse.ok("Hoverfly stopped and all mocked APIs are removed");
     }
     return HoverflyResponse.ok("Hoverfly not running");
   }
@@ -70,6 +71,7 @@ public class HoverflyService {
 
   @Tool(description = "Lists all request-response pairs (mock APIs) currently active in Hoverfly.")
   public Simulation listAllMockAPIs() {
+    validateIfHoverflyIsRunning();
     return hoverflyClient.getSimulation();
   }
 
@@ -196,9 +198,7 @@ public class HoverflyService {
                             """)
           String requestResponseJson) {
 
-    if (hoverfly == null || !hoverfly.isHealthy()) {
-      HoverflyResponse.error("Please start hoverfly before mocking the API");
-    }
+    validateIfHoverflyIsRunning();
     try {
       ValidationResult validationResult =
           requestResponsePairValidator.validate(requestResponseJson);
@@ -225,11 +225,18 @@ public class HoverflyService {
 
   @Tool(description = "Deletes all mock APIs from Hoverfly’s simulation.")
   public HoverflyResponse removeAllMockedAPIs() {
+    validateIfHoverflyIsRunning();
     try {
       hoverflyClient.deleteSimulation();
       return HoverflyResponse.ok("All mocked APIs removed.");
     } catch (HoverflyClientException e) {
       return HoverflyResponse.error("Failed to remove mocks: " + e.getMessage());
+    }
+  }
+
+  private void validateIfHoverflyIsRunning() {
+    if (hoverfly == null || !hoverfly.isHealthy()) {
+      throw new HoverflyClientException("Hoverfly is not running or not in healthy statue");
     }
   }
 }
