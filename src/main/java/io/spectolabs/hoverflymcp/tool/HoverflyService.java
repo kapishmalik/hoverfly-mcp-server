@@ -32,8 +32,8 @@ public class HoverflyService {
     return HoverflyResponse.ok(isRunning ? "Hoverfly is running" : "Hoverfly is not running");
   }
 
-  @Tool(description = "Starts the Hoverfly mock server in simulate mode.")
-  public HoverflyResponse startHoverfly() {
+  @Tool(description = "Starts the Hoverfly mock server in simulate mode as a WebServer.")
+  public HoverflyResponse startHoverflyAsWebServer() {
     if (hoverfly == null) {
       hoverfly =
           new Hoverfly(
@@ -46,7 +46,7 @@ public class HoverflyService {
               HoverflyMode.SIMULATE);
       hoverfly.start();
       return HoverflyResponse.ok(
-          "Hoverfly started in webserver mode on port 8500 with no mocked APIs");
+          "Hoverfly started as WebServer on port 8500 with no mocked APIs");
     }
     return HoverflyResponse.ok("Hoverfly already running");
   }
@@ -80,7 +80,7 @@ public class HoverflyService {
           """
             Creates a new mock API by adding a request-response pair to Hoverfly's simulation.
 
-            Make sure to call startHoverfly() first. If Hoverfly is not running, this operation will fail.
+            Make sure to call startHoverfly() first as WebServer. If Hoverfly is not running, this operation will fail.
 
             The input must be a valid RequestResponsePair object with request matchers
             (like path, method, destination, etc.) and a response containing status, body, and headers.
