@@ -29,7 +29,7 @@ public class HoverflyService {
   @Tool(description = "Returns the current status of the Hoverfly server.")
   public HoverflyResponse hoverflyStatus() {
     boolean isRunning = hoverfly != null && hoverfly.isHealthy();
-    return HoverflyResponse.ok(isRunning ? "Hoverfly is running" : "Hoverfly is not running");
+    return HoverflyResponse.ok(isRunning ? "Hoverfly is running as webserver mode" : "Hoverfly is not running");
   }
 
   @Tool(description = "Starts the Hoverfly mock server in simulate mode as a WebServer.")
