@@ -26,14 +26,16 @@ public class HoverflyService {
   private final ObjectMapper objectMapper;
   private final RequestResponsePairValidator requestResponsePairValidator;
 
-  @Tool(description = "Returns the current status of the Hoverfly server.")
+  @Tool(description = ToolDescriptionUtil.HoverflyStatus.DESCRIPTION)
   public HoverflyResponse hoverflyStatus() {
     boolean isRunning = hoverfly != null && hoverfly.isHealthy();
     return HoverflyResponse.ok(
-        isRunning ? "Hoverfly is running as webserver mode" : "Hoverfly is not running");
+        isRunning
+            ? ToolDescriptionUtil.HoverflyStatus.RUNNING_MESSAGE
+            : ToolDescriptionUtil.HoverflyStatus.NOT_RUNNING_MESSAGE);
   }
 
-  @Tool(description = "Starts the Hoverfly mock server in simulate mode as a WebServer.")
+  @Tool(description = ToolDescriptionUtil.StartHoverflyAsWebServer.DESCRIPTION)
   public HoverflyResponse startHoverflyAsWebServer() {
     if (hoverfly == null) {
       hoverfly =
@@ -46,156 +48,41 @@ public class HoverflyService {
                   .proxyPort(8500),
               HoverflyMode.SIMULATE);
       hoverfly.start();
-      return HoverflyResponse.ok("Hoverfly started as WebServer on port 8500 with no mocked APIs");
+      return HoverflyResponse.ok(ToolDescriptionUtil.StartHoverflyAsWebServer.STARTED_MESSAGE);
     }
-    return HoverflyResponse.ok("Hoverfly already running");
+    return HoverflyResponse.ok(
+        ToolDescriptionUtil.StartHoverflyAsWebServer.ALREADY_RUNNING_MESSAGE);
   }
 
-  @Tool(description = "Stops the Hoverfly mock server and clears its state.")
+  @Tool(description = ToolDescriptionUtil.StopHoverfly.DESCRIPTION)
   public HoverflyResponse stopHoverfly() {
     if (hoverfly != null) {
       hoverfly.close();
       hoverfly = null;
-      return HoverflyResponse.ok("Hoverfly stopped and all mocked APIs are removed");
+      return HoverflyResponse.ok(ToolDescriptionUtil.StopHoverfly.STOPPED_MESSAGE);
     }
-    return HoverflyResponse.ok("Hoverfly not running");
+    return HoverflyResponse.ok(ToolDescriptionUtil.StopHoverfly.NOT_RUNNING_STATUS_MESSAGE);
   }
 
-  @Tool(description = "Returns the current version of the Hoverfly instance.")
+  @Tool(description = ToolDescriptionUtil.GetHoverflyVersion.DESCRIPTION)
   public HoverflyResponse getHoverflyVersion() {
     if (hoverfly != null) {
-      return HoverflyResponse.ok("Hoverfly version: " + hoverfly.getHoverflyInfo().getVersion());
+      return HoverflyResponse.ok(
+          ToolDescriptionUtil.GetHoverflyVersion.VERSION_PREFIX
+              + hoverfly.getHoverflyInfo().getVersion());
     }
-    return HoverflyResponse.error("Hoverfly is not running");
+    return HoverflyResponse.error(ToolDescriptionUtil.GetHoverflyVersion.NOT_RUNNING_ERROR_MESSAGE);
   }
 
-  @Tool(description = "Lists all request-response pairs (mock APIs) currently active in Hoverfly.")
+  @Tool(description = ToolDescriptionUtil.ListAllMockApis.DESCRIPTION)
   public Simulation listAllMockAPIs() {
     validateIfHoverflyIsRunning();
     return hoverflyClient.getSimulation();
   }
 
-  @Tool(
-      description =
-          """
-            Creates a new mock API by adding a request-response pair to Hoverfly's simulation.
-
-            Make sure to call startHoverfly() first as WebServer. If Hoverfly is not running, this operation will fail.
-
-            The input must be a valid RequestResponsePair object with request matchers
-            (like path, method, destination, etc.) and a response containing status, body, and headers.
-            """)
+  @Tool(description = ToolDescriptionUtil.CreateMockApi.DESCRIPTION)
   public HoverflyResponse createMockAPI(
-      @ToolParam(
-              description =
-                  """
-                            Contains the expected request and the mock response.
-
-                            Example Input:
-                            {
-                              "request": {
-                                "path": [
-                                  { "matcher": "exact", "value": "/pages/keyconcepts/templates.html" }
-                                ],
-                                "method": [
-                                  { "matcher": "exact", "value": "GET" }
-                                ],
-                                "destination": [
-                                  { "matcher": "exact", "value": "docs.hoverfly.io" }
-                                ],
-                                "scheme": [
-                                  { "matcher": "exact", "value": "http" }
-                                ],
-                                "body": [
-                                  { "matcher": "exact", "value": "" }
-                                ],
-                                "query": {
-                                  "query": [
-                                    { "matcher": "exact", "value": "true" }
-                                  ]
-                                }
-                              },
-                              "response": {
-                                "status": 200,
-                                "body": "Response from docs.hoverfly.io/pages/keyconcepts/templates.html",
-                                "encodedBody": false,
-                                "headers": {
-                                  "Hoverfly": [ "Was-Here" ]
-                                },
-                                "templated": false
-                              }
-                            }
-
-                            Input RequestResponsePair Schema:
-                            {
-                              "type": "object",
-                              "properties": {
-                                "request": {
-                                  "type": "object",
-                                  "properties": {
-                                    "path": {
-                                      "type": "array",
-                                      "items": { "$ref": "#/definitions/matcher" }
-                                    },
-                                    "method": {
-                                      "type": "array",
-                                      "items": { "$ref": "#/definitions/matcher" }
-                                    },
-                                    "destination": {
-                                      "type": "array",
-                                      "items": { "$ref": "#/definitions/matcher" }
-                                    },
-                                    "scheme": {
-                                      "type": "array",
-                                      "items": { "$ref": "#/definitions/matcher" }
-                                    },
-                                    "body": {
-                                      "type": "array",
-                                      "items": { "$ref": "#/definitions/matcher" }
-                                    },
-                                    "query": {
-                                      "type": "object",
-                                      "properties": {
-                                        "query": {
-                                          "type": "array",
-                                          "items": { "$ref": "#/definitions/matcher" }
-                                        }
-                                      }
-                                    }
-                                  },
-                                  "required": ["path", "method", "destination", "scheme", "body"]
-                                },
-                                "response": {
-                                  "type": "object",
-                                  "properties": {
-                                    "status": { "type": "integer" },
-                                    "body": { "type": "string" },
-                                    "encodedBody": { "type": "boolean" },
-                                    "headers": {
-                                      "type": "object",
-                                      "additionalProperties": {
-                                        "type": "array",
-                                        "items": { "type": "string" }
-                                      }
-                                    },
-                                    "templated": { "type": "boolean" }
-                                  },
-                                  "required": ["status", "body", "encodedBody", "headers", "templated"]
-                                }
-                              },
-                              "required": ["request", "response"],
-                              "definitions": {
-                                "matcher": {
-                                  "type": "object",
-                                  "properties": {
-                                    "matcher": { "type": "string" },
-                                    "value": { "type": "string" }
-                                  },
-                                  "required": ["matcher", "value"]
-                                }
-                              }
-                            }
-                            """)
+      @ToolParam(description = ToolDescriptionUtil.CreateMockApi.PARAM_DESCRIPTION)
           String requestResponseJson) {
 
     validateIfHoverflyIsRunning();
@@ -205,7 +92,7 @@ public class HoverflyService {
       if (validationResult.isInValid()) {
         validationResult.addDocumentationSuggestion();
         return HoverflyResponse.error(
-            "Validation failed for request response pair passed", validationResult);
+            ToolDescriptionUtil.CreateMockApi.VALIDATION_FAILED_MESSAGE, validationResult);
       }
       RequestResponsePair pair =
           objectMapper.readValue(requestResponseJson, RequestResponsePair.class);
@@ -213,30 +100,34 @@ public class HoverflyService {
       simulation.getHoverflyData().getPairs().add(pair);
 
       hoverflyClient.setSimulation(simulation);
-      return HoverflyResponse.ok("Mock API added. Available on http://0.0.0.0:8500");
+      return HoverflyResponse.ok(ToolDescriptionUtil.CreateMockApi.SUCCESS_MESSAGE);
     } catch (JsonProcessingException exception) {
       ValidationResult validationResult = new ValidationResult();
       validationResult.addDocumentationSuggestion();
-      return HoverflyResponse.error("Invalid JSON for RequestResponsePair", validationResult);
+      return HoverflyResponse.error(
+          ToolDescriptionUtil.CreateMockApi.INVALID_JSON_MESSAGE, validationResult);
     } catch (HoverflyClientException e) {
-      return HoverflyResponse.error("Failed to create mock API: " + e.getMessage());
+      return HoverflyResponse.error(
+          ToolDescriptionUtil.CreateMockApi.FAILED_TO_CREATE_PREFIX + e.getMessage());
     }
   }
 
-  @Tool(description = "Deletes all mock APIs from Hoverfly’s simulation.")
+  @Tool(description = ToolDescriptionUtil.RemoveAllMockedApis.DESCRIPTION)
   public HoverflyResponse removeAllMockedAPIs() {
     validateIfHoverflyIsRunning();
     try {
       hoverflyClient.deleteSimulation();
-      return HoverflyResponse.ok("All mocked APIs removed.");
+      return HoverflyResponse.ok(ToolDescriptionUtil.RemoveAllMockedApis.SUCCESS_MESSAGE);
     } catch (HoverflyClientException e) {
-      return HoverflyResponse.error("Failed to remove mocks: " + e.getMessage());
+      return HoverflyResponse.error(
+          ToolDescriptionUtil.RemoveAllMockedApis.FAILED_TO_REMOVE_PREFIX + e.getMessage());
     }
   }
 
   private void validateIfHoverflyIsRunning() {
     if (hoverfly == null || !hoverfly.isHealthy()) {
-      throw new HoverflyClientException("Hoverfly is not running or not in healthy statue");
+      throw new HoverflyClientException(
+          ToolDescriptionUtil.CommonErrors.HOVERFLY_NOT_HEALTHY_MESSAGE);
     }
   }
 }
