@@ -30,7 +30,7 @@ public final class ToolDescriptionUtil {
     **Access URLs:**
     - **Admin UI:** http://localhost:8888
     - **Mock Server Endpoint:** http://localhost:8500
-    - **View or download the current simulation at:** http://localhost:8500/api/v2/simulation
+    - **View or download the current simulation at:** http://localhost:8888/api/v2/simulation
 
     You can:
     - Point your API clients to `http://localhost:8500`
@@ -197,7 +197,7 @@ public final class ToolDescriptionUtil {
 
     You can:
     - Access the mock server at: http://localhost:8500
-    - View or download the current simulation at: http://localhost:8500/api/v2/simulation
+    - View or download the current simulation at: http://localhost:8888/api/v2/simulation
     """;
     public static final String VALIDATION_FAILED_MESSAGE =
         "Validation failed for request response pair passed";
@@ -244,11 +244,11 @@ public final class ToolDescriptionUtil {
 
             -  Mock Server Endpoint: http://localhost:8500
             -  Admin API / UI: http://localhost:8888
-            -  Simulation File (View/Download): http://localhost:8500/api/v2/simulation
+            -  Simulation File (View/Download): http://localhost:8888/api/v2/simulation
 
             📦 Example usage:
             - Call a mock API: curl http://localhost:8500/api/your-mock
-            - View simulation file: curl http://localhost:8500/api/v2/simulation
+            - View simulation file: curl http://localhost:8888/api/v2/simulation
             - Admin UI in browser: http://localhost:8888
 
             Tip: You can persist mocks by saving the simulation file.
