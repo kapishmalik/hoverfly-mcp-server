@@ -221,4 +221,105 @@ public final class ToolDescriptionUtil {
     public static final String HOVERFLY_NOT_HEALTHY_MESSAGE =
         "Hoverfly is not running or not in healthy statue";
   }
+
+  // ============================================================================
+  // GET HOVERFLY ACCESS INFO TOOL
+  // ============================================================================
+  public static final class GetHoverflyAccessInfo {
+    public static final String DESCRIPTION =
+            """
+            Returns a canonical list of all key Hoverfly endpoints, including:
+    
+            - Mock server base URL (for intercepted API calls)
+            - Admin API and UI (for managing simulations and viewing logs)
+            - Simulation file endpoint (for viewing or downloading the current simulation)
+            - Example curl commands for quick testing
+    
+            This helps developers, tools, or LLMs understand how to interact with Hoverfly after startup.
+            """;
+
+    public static final String INFO =
+            """
+            Hoverfly Access Information:
+    
+            -  Mock Server Endpoint: http://localhost:8500
+            -  Admin API / UI: http://localhost:8888
+            -  Simulation File (View/Download): http://localhost:8500/api/v2/simulation
+    
+            📦 Example usage:
+            - Call a mock API: curl http://localhost:8500/api/your-mock
+            - View simulation file: curl http://localhost:8500/api/v2/simulation
+            - Admin UI in browser: http://localhost:8888
+    
+            Tip: You can persist mocks by saving the simulation file.
+            """;
+  }
+
+  // ============================================================================
+  // GET HOVERFLY SIMULATION CONCEPTS TOOL
+  // ============================================================================
+  public static final class GetHoverflySimulationConcepts {
+    public static final String DESCRIPTION =
+            """
+            Explains Hoverfly simulation concepts including matchers, templating, required fields, and common mistakes.
+            Useful for LLMs and developers generating or validating simulation JSON.
+            """;
+
+    public static final String CONCEPTS =
+            """
+            Hoverfly Simulation Concepts
+    
+            Matchers
+            - Each request field (e.g., `method`, `path`, `destination`) uses an array of matcher objects:
+              Example: { "matcher": "exact", "value": "GET" }
+    
+            Supported matcher types:
+            - exact, glob, regex, array
+            - json, jsonpath, jsonpartial
+            - xml, xpath
+            - jwt, form
+    
+            Matching Strategies:
+            - **Strongest Match** (default): Returns the most specific match
+            - **First Match**: Returns the first match found in order
+    
+            More info: https://docs.hoverfly.io/en/latest/pages/keyconcepts/matching/matching.html#matching
+    
+            Required Fields in Request
+            - Must-have: `request.method`
+            - Recommended: `path`, `destination`, `scheme`, `headers`, `body`, `query`
+    
+            Response Block
+            - Must include:
+              - `status`: Integer (e.g., 200)
+              - `body`: String
+              - `encodedBody`: Boolean (true/false)
+              - `headers`: Object (String → Array of Strings)
+              - `templated`: Boolean (enables template evaluation)
+    
+            Templating (Dynamic Responses)
+            - Enable with `"templated": true` in the response
+            - Use expressions like:
+              - `{{ Request.Method }}`
+              - `{{ Request.QueryParam.name }}`
+              - `{{ Request.Header.X-Correlation-Id }}`
+            - Supports:
+              - Date/time: `{{ now }}`, `{{ dateFormat now "yyyy-MM-dd" }}`
+              - Random: `{{ randomInt 1000 9999 }}`
+              - String ops: `{{ toUpper "text" }}`
+              - Logic: `{{#if condition}} ... {{/if}}`
+    
+            Docs: https://docs.hoverfly.io/en/latest/pages/keyconcepts/templating/templating.html
+    
+            Common Mistakes
+            - Missing `"matcher"` or `"value"` keys in request matchers
+            - Omitting required `request.method`
+            - Using unsupported matcher types
+            - Incorrect response headers format (should be object of arrays)
+    
+            📎 Additional References:
+            - Matchers: https://docs.hoverfly.io/en/latest/pages/keyconcepts/matching/matching.html
+            - Templating: https://docs.hoverfly.io/en/latest/pages/keyconcepts/templating/templating.html
+            """;
+  }
 }

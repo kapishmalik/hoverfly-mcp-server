@@ -124,6 +124,16 @@ public class HoverflyService {
     }
   }
 
+  @Tool(description = ToolDescriptionUtil.GetHoverflyAccessInfo.DESCRIPTION)
+  public HoverflyResponse getHoverflyAccessInfo() {
+    return HoverflyResponse.ok(ToolDescriptionUtil.GetHoverflyAccessInfo.INFO);
+  }
+
+  @Tool(description = ToolDescriptionUtil.GetHoverflySimulationConcepts.DESCRIPTION)
+  public HoverflyResponse getHoverflySimulationConcepts() {
+    return HoverflyResponse.ok(ToolDescriptionUtil.GetHoverflySimulationConcepts.CONCEPTS);
+  }
+
   private void validateIfHoverflyIsRunning() {
     if (hoverfly == null || !hoverfly.isHealthy()) {
       throw new HoverflyClientException(
