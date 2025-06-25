@@ -1,8 +1,8 @@
-package io.spectolabs.hoverflymcp.validation;
+package com.hoverfly.mcp.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.hoverfly.mcp.response.ValidationResult;
 import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
-import io.spectolabs.hoverflymcp.response.ValidationResult;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;

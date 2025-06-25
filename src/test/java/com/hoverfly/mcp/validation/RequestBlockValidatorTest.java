@@ -1,11 +1,11 @@
-package io.spectolabs.hoverflymcp.validation;
+package com.hoverfly.mcp.validation;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.spectolabs.hoverflymcp.response.ValidationResult;
+import com.hoverfly.mcp.response.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

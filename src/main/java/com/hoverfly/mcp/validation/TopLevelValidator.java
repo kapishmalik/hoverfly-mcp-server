@@ -1,7 +1,7 @@
-package io.spectolabs.hoverflymcp.validation;
+package com.hoverfly.mcp.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.spectolabs.hoverflymcp.response.ValidationResult;
+import com.hoverfly.mcp.response.ValidationResult;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -1,8 +1,8 @@
-package io.spectolabs.hoverflymcp;
+package com.hoverfly.mcp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hoverfly.mcp.tool.HoverflyService;
 import io.specto.hoverfly.junit.api.HoverflyClient;
-import io.spectolabs.hoverflymcp.tool.HoverflyService;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.boot.SpringApplication;

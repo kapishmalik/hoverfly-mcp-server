@@ -1,4 +1,4 @@
-package io.spectolabs.hoverflymcp.response;
+package com.hoverfly.mcp.response;
 
 import java.util.ArrayList;
 import java.util.List;

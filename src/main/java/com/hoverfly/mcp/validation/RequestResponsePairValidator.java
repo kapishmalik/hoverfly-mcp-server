@@ -1,11 +1,11 @@
-package io.spectolabs.hoverflymcp.validation;
+package com.hoverfly.mcp.validation;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hoverfly.mcp.response.ValidationResult;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
-import io.spectolabs.hoverflymcp.response.ValidationResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
