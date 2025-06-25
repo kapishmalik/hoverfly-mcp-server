@@ -9,7 +9,7 @@ A **Spring Boot**-based **Model Context Protocol (MCP)** server that exposes [Ho
 
 ### Prerequisites
 
-- Java 17+
+- Java 17
 - Maven 3.6+
 
 ### Build & Run
