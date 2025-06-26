@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoverfly.mcp.response.HoverflyResponse;
 import com.hoverfly.mcp.response.ValidationResult;
+import com.hoverfly.mcp.suggestion.matcher.MatcherSuggestionCollector;
 import com.hoverfly.mcp.tool.util.*;
+import com.hoverfly.mcp.tool.util.GetMatcherSuggestionsToolConstants;
 import com.hoverfly.mcp.validation.RequestResponsePairValidator;
 import io.specto.hoverfly.junit.api.HoverflyClient;
 import io.specto.hoverfly.junit.api.HoverflyClientException;
@@ -13,6 +15,7 @@ import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.core.model.Simulation;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
@@ -26,6 +29,12 @@ public class HoverflyService {
   private final HoverflyClient hoverflyClient;
   private final ObjectMapper objectMapper;
   private final RequestResponsePairValidator requestResponsePairValidator;
+  private final MatcherSuggestionCollector matcherSuggestionCollector;
+
+  @PostConstruct
+  public void logStartup() {
+    System.out.println("HoverflyService bean created successfully.");
+  }
 
   @Tool(description = HoverflyStatusToolConstants.DESCRIPTION)
   public HoverflyResponse hoverflyStatus() {
@@ -131,6 +140,28 @@ public class HoverflyService {
   @Tool(description = GetHoverflySimulationConceptsToolConstants.DESCRIPTION)
   public HoverflyResponse getHoverflySimulationConcepts() {
     return HoverflyResponse.ok(GetHoverflySimulationConceptsToolConstants.CONCEPTS);
+  }
+
+  @Tool(description = GetMatcherSuggestionsToolConstants.DESCRIPTION)
+  public HoverflyResponse matcherSuggestionsForPair(
+      @ToolParam(description = GetMatcherSuggestionsToolConstants.PARAM_DESCRIPTION)
+          String pairJson) {
+    try {
+      ValidationResult validationResult = requestResponsePairValidator.validate(pairJson);
+      if (validationResult.isInValid()) {
+        validationResult.addDocumentationSuggestion();
+        return HoverflyResponse.error("Invalid request-response pair.", validationResult);
+      }
+      RequestResponsePair pair = objectMapper.readValue(pairJson, RequestResponsePair.class);
+      var request = pair.getRequest();
+      if (request == null) {
+        return HoverflyResponse.error("Request block missing in pair JSON.");
+      }
+      var suggestions = matcherSuggestionCollector.collectSuggestions(request);
+      return HoverflyResponse.ok(objectMapper.writeValueAsString(suggestions));
+    } catch (Exception e) {
+      return HoverflyResponse.error("Failed to analyze matcher suggestions: " + e.getMessage());
+    }
   }
 
   private void validateIfHoverflyIsRunning() {
