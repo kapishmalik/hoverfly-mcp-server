@@ -52,10 +52,10 @@ public class HoverflyService {
           new Hoverfly(
               HoverflyConfig.localConfigs()
                   .addCommands("-listen-on-host", "0.0.0.0")
-                  .asWebServer()
+                  .binaryLocation("/bin/hoverfly")
                   .proxyLocalHost()
                   .adminPort(8888)
-                  .proxyPort(8500),
+                  .proxyPort(8500).asWebServer(),
               HoverflyMode.SIMULATE);
       hoverfly.start();
       return HoverflyResponse.ok(StartHoverflyAsWebServerToolConstants.STARTED_MESSAGE);
