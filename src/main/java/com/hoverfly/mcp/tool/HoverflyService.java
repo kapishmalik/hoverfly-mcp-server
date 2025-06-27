@@ -31,11 +31,6 @@ public class HoverflyService {
   private final RequestResponsePairValidator requestResponsePairValidator;
   private final MatcherSuggestionCollector matcherSuggestionCollector;
 
-  @PostConstruct
-  public void logStartup() {
-    System.out.println("HoverflyService bean created successfully.");
-  }
-
   @Tool(description = HoverflyStatusToolConstants.DESCRIPTION)
   public HoverflyResponse hoverflyStatus() {
     boolean isRunning = hoverfly != null && hoverfly.isHealthy();
