@@ -29,7 +29,7 @@
         <dependency>
             <groupId>io.specto</groupId>
             <artifactId>hoverfly-java</artifactId>
-            <version>0.17.0</version>
+            <version>0.20.2</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -90,4 +90,4 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-</project> 
+</project>
