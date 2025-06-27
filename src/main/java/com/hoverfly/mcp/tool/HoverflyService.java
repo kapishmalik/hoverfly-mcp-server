@@ -55,7 +55,8 @@ public class HoverflyService {
                   .binaryLocation("/bin/hoverfly")
                   .proxyLocalHost()
                   .adminPort(8888)
-                  .proxyPort(8500).asWebServer(),
+                  .proxyPort(8500)
+                  .asWebServer(),
               HoverflyMode.SIMULATE);
       hoverfly.start();
       return HoverflyResponse.ok(StartHoverflyAsWebServerToolConstants.STARTED_MESSAGE);
