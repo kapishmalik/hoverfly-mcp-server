@@ -1,23 +1,16 @@
-FROM spectolabs/hoverfly:latest
+FROM eclipse-temurin:17-jre-alpine
 
-# Install OpenJDK JRE 17
-RUN apk add --no-cache openjdk17-jre-headless \
-    && addgroup -S hoverflymcp \
-    && adduser -S -G hoverflymcp -h /opt/hoverfly-mcp hoverflymcp \
-    && mkdir -p /opt/hoverfly-mcp \
-    && chown -R hoverflymcp:hoverflymcp /opt/hoverfly-mcp
-
-# Set environment variables
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
+# Create non-root user and set up application directory
+RUN addgroup -S hoverflymcp && \
+    adduser -S -G hoverflymcp -h /opt/hoverfly-mcp hoverflymcp && \
+    mkdir -p /opt/hoverfly-mcp && \
+    chown -R hoverflymcp:hoverflymcp /opt/hoverfly-mcp
 
 # Copy the JAR
 COPY --chown=hoverflymcp:hoverflymcp target/hoverfly-mcp-server-0.0.1-SNAPSHOT.jar /opt/hoverfly-mcp/hoverfly-mcp.jar
 
-# Set ownership of the JAR
-RUN chown hoverflymcp:hoverflymcp /opt/hoverfly-mcp/hoverfly-mcp.jar
-
 USER hoverflymcp
 WORKDIR /opt/hoverfly-mcp
 
-ENTRYPOINT ["java", "-jar", "hoverfly-mcp.jar"]
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "hoverfly-mcp.jar"]
+
