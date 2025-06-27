@@ -52,7 +52,6 @@ public class HoverflyService {
           new Hoverfly(
               HoverflyConfig.localConfigs()
                   .addCommands("-listen-on-host", "0.0.0.0")
-                  .binaryLocation("/bin/hoverfly")
                   .proxyLocalHost()
                   .adminPort(8888)
                   .proxyPort(8500)
