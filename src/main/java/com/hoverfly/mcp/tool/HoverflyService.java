@@ -69,7 +69,9 @@ public class HoverflyService {
    *
    * @return HoverflyResponse indicating whether Hoverfly was started or already running.
    */
-  @Tool(name = "start_hoverfly_web_server", description = StartHoverflyAsWebServerToolConstants.DESCRIPTION)
+  @Tool(
+      name = "start_hoverfly_web_server",
+      description = StartHoverflyAsWebServerToolConstants.DESCRIPTION)
   public HoverflyResponse startHoverflyAsWebServer() {
     if (hoverfly == null) {
       hoverfly =
@@ -190,7 +192,9 @@ public class HoverflyService {
    *
    * @return HoverflyResponse containing endpoint information and usage tips.
    */
-  @Tool(name = "show_hoverfly_endpoints_info", description = GetHoverflyAccessInfoToolConstants.DESCRIPTION)
+  @Tool(
+      name = "show_hoverfly_endpoints_info",
+      description = GetHoverflyAccessInfoToolConstants.DESCRIPTION)
   public HoverflyResponse getHoverflyAccessInfo() {
     return HoverflyResponse.ok(GetHoverflyAccessInfoToolConstants.INFO);
   }
@@ -201,7 +205,9 @@ public class HoverflyService {
    * @param topic The documentation topic to look up. Allowed values: "matchers", "templating".
    * @return HoverflyResponse containing the requested documentation or an error message.
    */
-  @Tool(name = "get_hoverfly_documentation", description = LookupDocumentationToolConstants.DESCRIPTION)
+  @Tool(
+      name = "get_hoverfly_documentation",
+      description = LookupDocumentationToolConstants.DESCRIPTION)
   public HoverflyResponse lookupDocumentation(
       @ToolParam(description = LookupDocumentationToolConstants.TOOL_PARAM_DESCRIPTION)
           String topic) {
@@ -215,7 +221,9 @@ public class HoverflyService {
    * @param pairJson JSON string representing a valid Hoverfly RequestResponsePair.
    * @return HoverflyResponse containing matcher suggestions or validation errors.
    */
-  @Tool(name = "suggest_hoverfly_matchers", description = GetMatcherSuggestionsToolConstants.DESCRIPTION)
+  @Tool(
+      name = "suggest_hoverfly_matchers",
+      description = GetMatcherSuggestionsToolConstants.DESCRIPTION)
   public HoverflyResponse matcherSuggestionsForPair(
       @ToolParam(description = GetMatcherSuggestionsToolConstants.PARAM_DESCRIPTION)
           String pairJson) {
@@ -245,7 +253,9 @@ public class HoverflyService {
    * @return HoverflyLogsResponse containing the latest log entries, or an empty list if Hoverfly is
    *     not running.
    */
-  @Tool(name = "get_hoverfly_debug_logs", description = GetHoverflyLogsToolConstants.DEBUG_LOGS_TOOL_DESCRIPTION)
+  @Tool(
+      name = "get_hoverfly_debug_logs",
+      description = GetHoverflyLogsToolConstants.DEBUG_LOGS_TOOL_DESCRIPTION)
   public HoverflyLogsResponse debugHoverflyWithLogs(
       @ToolParam(description = GetHoverflyLogsToolConstants.DEBUG_LOGS_TOOL_PARAM_DESCRIPTION)
           Integer limit) {
