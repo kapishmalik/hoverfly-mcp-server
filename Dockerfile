@@ -7,7 +7,7 @@ RUN addgroup -S hoverflymcp && \
     chown -R hoverflymcp:hoverflymcp /opt/hoverfly-mcp
 
 # Copy the JAR
-COPY --chown=hoverflymcp:hoverflymcp target/hoverfly-mcp-server-0.0.1-SNAPSHOT.jar /opt/hoverfly-mcp/hoverfly-mcp.jar
+COPY --chown=hoverflymcp:hoverflymcp target/hoverfly-mcp-server-*.jar /opt/hoverfly-mcp/hoverfly-mcp.jar
 
 USER hoverflymcp
 WORKDIR /opt/hoverfly-mcp
