@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -39,10 +39,27 @@ jobs:
           mvn versions:set -DnewVersion=${{ steps.version.outputs.version }}
 
       - name: Commit version update
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           git add pom.xml
           git commit -m "Update version to ${{ steps.version.outputs.version }} for release"
-          git push origin main
+          git push origin HEAD:release-${{ steps.version.outputs.version }}
+
+      - name: Create Pull Request for version update
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          branch: release-${{ steps.version.outputs.version }}
+          base: main
+          title: "Release version ${{ steps.version.outputs.version }}"
+          body: |
+            Automated release for version ${{ steps.version.outputs.version }}
+            
+            This PR updates the version in pom.xml for the release.
+          delete-branch: true
+          committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
 
       - name: Build and test
         run: |
@@ -83,7 +100,24 @@ jobs:
           mvn versions:set -DnewVersion=$NEXT_SNAPSHOT
 
       - name: Commit next snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           git add pom.xml
           git commit -m "Prepare for next development iteration"
-          git push origin main 
+          git push origin HEAD:snapshot-${{ steps.version.outputs.version }}
+
+      - name: Create Pull Request for snapshot update
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          branch: snapshot-${{ steps.version.outputs.version }}
+          base: main
+          title: "Prepare for next development iteration"
+          body: |
+            Automated update to next snapshot version after release ${{ steps.version.outputs.version }}
+            
+            This PR updates the version in pom.xml to the next snapshot version for continued development.
+          delete-branch: true
+          committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com> 
