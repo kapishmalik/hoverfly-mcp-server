@@ -55,17 +55,17 @@ To use this server with an AI assistant that supports Model Context Protocol (MC
 
 | Tool Name                       | Description                                                      |
 |----------------------------------|------------------------------------------------------------------|
-| `hoverflyStatus()`               | Checks if Hoverfly is running                                    |
-| `startHoverflyAsWebServer()`     | Starts Hoverfly in simulate mode as a web server                 |
-| `stopHoverfly()`                 | Stops Hoverfly and clears mocks                                  |
-| `getHoverflyVersion()`           | Returns Hoverfly version                                         |
-| `listAllMockAPIs()`              | Lists all active mock APIs (request-response pairs)              |
-| `createMockAPI(json)`            | Adds a mock API using a JSON RequestResponsePair definition      |
-| `removeAllMockedAPIs()`          | Removes all existing mock APIs                                   |
-| `getHoverflyAccessInfo()`        | Returns key Hoverfly endpoints and example usage                 |
-| `lookupDocumentation(topic)`     | Returns Hoverfly documentation for a specific topic              |
-| `matcherSuggestionsForPair(json)`| Suggests matcher options for a given request-response pair JSON  |
-| `debugHoverflyWithLogs(limit)`   | Fetches recent Hoverfly logs for debugging (limit is optional)   |
+| `get_hoverfly_status`              | Checks if Hoverfly is running                                    |
+| `start_hoverfly_web_server`        | Starts Hoverfly in simulate mode as a web server                 |
+| `stop_hoverfly_server`             | Stops Hoverfly and clears mocks                                  |
+| `fetch_hoverfly_version`           | Returns Hoverfly version                                         |
+| `list_hoverfly_mocks`              | Lists all active mock APIs (request-response pairs)              |
+| `add_hoverfly_mock`                | Adds a mock API using a JSON RequestResponsePair definition      |
+| `clear_hoverfly_mocks`             | Removes all existing mock APIs                                   |
+| `show_hoverfly_endpoints_info`     | Returns key Hoverfly endpoints and example usage                 |
+| `get_hoverfly_documentation`       | Returns Hoverfly documentation for a specific topic              |
+| `suggest_hoverfly_matchers`        | Suggests matcher options for a given request-response pair JSON  |
+| `get_hoverfly_debug_logs`          | Fetches recent Hoverfly logs for debugging (limit is optional)   |
 
 These tools can be invoked programmatically by AI assistants through the MCP interface.
 

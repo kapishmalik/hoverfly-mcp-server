@@ -55,7 +55,7 @@ public class HoverflyService {
    *
    * @return HoverflyResponse indicating the status of the Hoverfly server.
    */
-  @Tool(description = HoverflyStatusToolConstants.DESCRIPTION)
+  @Tool(name = "get_hoverfly_status", description = HoverflyStatusToolConstants.DESCRIPTION)
   public HoverflyResponse hoverflyStatus() {
     boolean isRunning = hoverfly != null && hoverfly.isHealthy();
     return HoverflyResponse.ok(
@@ -69,7 +69,7 @@ public class HoverflyService {
    *
    * @return HoverflyResponse indicating whether Hoverfly was started or already running.
    */
-  @Tool(description = StartHoverflyAsWebServerToolConstants.DESCRIPTION)
+  @Tool(name = "start_hoverfly_web_server", description = StartHoverflyAsWebServerToolConstants.DESCRIPTION)
   public HoverflyResponse startHoverflyAsWebServer() {
     if (hoverfly == null) {
       hoverfly =
@@ -92,7 +92,7 @@ public class HoverflyService {
    *
    * @return HoverflyResponse indicating whether Hoverfly was stopped or not running.
    */
-  @Tool(description = StopHoverflyToolConstants.DESCRIPTION)
+  @Tool(name = "stop_hoverfly_server", description = StopHoverflyToolConstants.DESCRIPTION)
   public HoverflyResponse stopHoverfly() {
     if (hoverfly != null) {
       hoverfly.close();
@@ -107,7 +107,7 @@ public class HoverflyService {
    *
    * @return HoverflyResponse containing the Hoverfly version, or an error if not running.
    */
-  @Tool(description = GetHoverflyVersionToolConstants.DESCRIPTION)
+  @Tool(name = "fetch_hoverfly_version", description = GetHoverflyVersionToolConstants.DESCRIPTION)
   public HoverflyResponse getHoverflyVersion() {
     if (hoverfly != null) {
       return HoverflyResponse.ok(
@@ -122,7 +122,7 @@ public class HoverflyService {
    * @return Simulation object representing the current Hoverfly simulation.
    * @throws HoverflyClientException if Hoverfly is not running or healthy.
    */
-  @Tool(description = ListAllMockApisToolConstants.DESCRIPTION)
+  @Tool(name = "list_hoverfly_mocks", description = ListAllMockApisToolConstants.DESCRIPTION)
   public Simulation listAllMockAPIs() {
     validateIfHoverflyIsRunning();
     return hoverflyClient.getSimulation();
@@ -135,7 +135,7 @@ public class HoverflyService {
    * @return HoverflyResponse indicating success or validation errors.
    * @throws HoverflyClientException if Hoverfly is not running or healthy.
    */
-  @Tool(description = CreateMockApiToolConstants.DESCRIPTION)
+  @Tool(name = "add_hoverfly_mock", description = CreateMockApiToolConstants.DESCRIPTION)
   public HoverflyResponse createMockAPI(
       @ToolParam(description = CreateMockApiToolConstants.PARAM_DESCRIPTION)
           String requestResponseJson) {
@@ -173,7 +173,7 @@ public class HoverflyService {
    * @return HoverflyResponse indicating success or failure.
    * @throws HoverflyClientException if Hoverfly is not running or healthy.
    */
-  @Tool(description = RemoveAllMockedApisToolConstants.DESCRIPTION)
+  @Tool(name = "clear_hoverfly_mocks", description = RemoveAllMockedApisToolConstants.DESCRIPTION)
   public HoverflyResponse removeAllMockedAPIs() {
     validateIfHoverflyIsRunning();
     try {
@@ -190,7 +190,7 @@ public class HoverflyService {
    *
    * @return HoverflyResponse containing endpoint information and usage tips.
    */
-  @Tool(description = GetHoverflyAccessInfoToolConstants.DESCRIPTION)
+  @Tool(name = "show_hoverfly_endpoints_info", description = GetHoverflyAccessInfoToolConstants.DESCRIPTION)
   public HoverflyResponse getHoverflyAccessInfo() {
     return HoverflyResponse.ok(GetHoverflyAccessInfoToolConstants.INFO);
   }
@@ -201,7 +201,7 @@ public class HoverflyService {
    * @param topic The documentation topic to look up. Allowed values: "matchers", "templating".
    * @return HoverflyResponse containing the requested documentation or an error message.
    */
-  @Tool(description = LookupDocumentationToolConstants.DESCRIPTION)
+  @Tool(name = "get_hoverfly_documentation", description = LookupDocumentationToolConstants.DESCRIPTION)
   public HoverflyResponse lookupDocumentation(
       @ToolParam(description = LookupDocumentationToolConstants.TOOL_PARAM_DESCRIPTION)
           String topic) {
@@ -215,7 +215,7 @@ public class HoverflyService {
    * @param pairJson JSON string representing a valid Hoverfly RequestResponsePair.
    * @return HoverflyResponse containing matcher suggestions or validation errors.
    */
-  @Tool(description = GetMatcherSuggestionsToolConstants.DESCRIPTION)
+  @Tool(name = "suggest_hoverfly_matchers", description = GetMatcherSuggestionsToolConstants.DESCRIPTION)
   public HoverflyResponse matcherSuggestionsForPair(
       @ToolParam(description = GetMatcherSuggestionsToolConstants.PARAM_DESCRIPTION)
           String pairJson) {
@@ -245,7 +245,7 @@ public class HoverflyService {
    * @return HoverflyLogsResponse containing the latest log entries, or an empty list if Hoverfly is
    *     not running.
    */
-  @Tool(description = GetHoverflyLogsToolConstants.DEBUG_LOGS_TOOL_DESCRIPTION)
+  @Tool(name = "get_hoverfly_debug_logs", description = GetHoverflyLogsToolConstants.DEBUG_LOGS_TOOL_DESCRIPTION)
   public HoverflyLogsResponse debugHoverflyWithLogs(
       @ToolParam(description = GetHoverflyLogsToolConstants.DEBUG_LOGS_TOOL_PARAM_DESCRIPTION)
           Integer limit) {
