@@ -40,7 +40,7 @@ jobs:
 
       - name: Commit version update
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git add pom.xml
           git commit -m "Update version to ${{ steps.version.outputs.version }} for release"
@@ -49,7 +49,7 @@ jobs:
       - name: Create Pull Request for version update
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           branch: release-${{ steps.version.outputs.version }}
           base: main
           title: "Release version ${{ steps.version.outputs.version }}"
@@ -79,7 +79,7 @@ jobs:
       - name: Upload release assets
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./target/hoverfly-mcp-server-${{ steps.version.outputs.version }}.jar
@@ -101,7 +101,7 @@ jobs:
 
       - name: Commit next snapshot
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git add pom.xml
           git commit -m "Prepare for next development iteration"
@@ -110,7 +110,7 @@ jobs:
       - name: Create Pull Request for snapshot update
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           branch: snapshot-${{ steps.version.outputs.version }}
           base: main
           title: "Prepare for next development iteration"
