@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.spectolabs.hoverflymcp</groupId>
     <artifactId>hoverfly-mcp-server</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>Hoverfly MCP Server</name>
     <description>Spring Boot MCP server exposing Hoverfly as a tool</description>
     <parent>
