@@ -1,0 +1,89 @@
+name: GitHub Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          # Extract version from tag (remove 'v' prefix)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Update pom.xml version
+        run: |
+          mvn versions:set -DnewVersion=${{ steps.version.outputs.version }}
+
+      - name: Commit version update
+        run: |
+          git add pom.xml
+          git commit -m "Update version to ${{ steps.version.outputs.version }} for release"
+          git push origin main
+
+      - name: Build and test
+        run: |
+          mvn clean test package
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            kapish88/hoverfly-mcp-server:latest
+            kapish88/hoverfly-mcp-server:${{ steps.version.outputs.version }}
+            kapish88/hoverfly-mcp-server:v${{ steps.version.outputs.version }}
+
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./target/hoverfly-mcp-server-${{ steps.version.outputs.version }}.jar
+          asset_name: hoverfly-mcp-server-${{ steps.version.outputs.version }}.jar
+          asset_content_type: application/java-archive
+
+      - name: Update to next snapshot
+        run: |
+          # Calculate next snapshot version
+          VERSION="${{ steps.version.outputs.version }}"
+          IFS='.' read -ra VERSION_PARTS <<< "$VERSION"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+          NEXT_PATCH=$((PATCH + 1))
+          NEXT_SNAPSHOT="$MAJOR.$MINOR.$NEXT_PATCH-SNAPSHOT"
+          
+          mvn versions:set -DnewVersion=$NEXT_SNAPSHOT
+
+      - name: Commit next snapshot
+        run: |
+          git add pom.xml
+          git commit -m "Prepare for next development iteration"
+          git push origin main 
