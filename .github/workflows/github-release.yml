@@ -57,28 +57,6 @@ jobs:
           asset_name: hoverfly-mcp-server-${{ steps.version.outputs.version }}.jar
           asset_content_type: application/java-archive
 
-      - name: Commit version update
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          git add pom.xml
-          git commit -m "Update version to ${{ steps.version.outputs.version }} for release"
-          git push origin HEAD:release-${{ steps.version.outputs.version }}
-
-      - name: Create Pull Request for version update
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          branch: release-${{ steps.version.outputs.version }}
-          base: main
-          title: "Release version ${{ steps.version.outputs.version }}"
-          body: |
-            Automated release for version ${{ steps.version.outputs.version }}
-            
-            This PR updates the version in pom.xml for the release.
-          delete-branch: true
-          committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
-          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -134,4 +112,14 @@ jobs:
             This PR updates the version in pom.xml to the next snapshot version for continued development.
           delete-branch: true
           committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
-          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com> 
+          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          labels: |
+            automated
+            snapshot
+          assignees: ${{ github.actor }}
+
+      - name: Auto-merge snapshot update PR
+        run: |
+          gh pr merge --auto --merge "$(gh pr list --head snapshot-${{ steps.version.outputs.version }} --json number --jq '.[0].number')"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
