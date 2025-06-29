@@ -71,7 +71,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             kapish88/hoverfly-mcp-server:latest
@@ -88,7 +88,7 @@ jobs:
           PATCH=${VERSION_PARTS[2]}
           NEXT_PATCH=$((PATCH + 1))
           NEXT_SNAPSHOT="$MAJOR.$MINOR.$NEXT_PATCH-SNAPSHOT"
-          
+
           mvn versions:set -DnewVersion=$NEXT_SNAPSHOT
 
       - name: Commit next snapshot
@@ -108,7 +108,7 @@ jobs:
           title: "Prepare for next development iteration"
           body: |
             Automated update to next snapshot version after release ${{ steps.version.outputs.version }}
-            
+
             This PR updates the version in pom.xml to the next snapshot version for continued development.
           delete-branch: true
           committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
@@ -122,4 +122,4 @@ jobs:
         run: |
           gh pr merge --auto --merge "$(gh pr list --head snapshot-${{ steps.version.outputs.version }} --json number --jq '.[0].number')"
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
