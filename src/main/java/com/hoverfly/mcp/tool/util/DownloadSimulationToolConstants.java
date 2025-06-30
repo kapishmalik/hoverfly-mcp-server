@@ -8,9 +8,9 @@ public final class DownloadSimulationToolConstants {
   }
 
   public static final String DESCRIPTION =
-      "Downloads the current Hoverfly simulation file to a mounted volume. "
-          + "This tool will automatically detect mounted volumes and save the simulation "
-          + "to a /hoverfly-data directory within the first available mounted volume. "
+      "Downloads the current Hoverfly simulation file to the persistent simulation directory. "
+          + "The simulation is always saved to /opt/hoverfly-mcp/simulation-data inside the container. "
+          + "Mount this directory to your host for persistence. "
           + "The file will be saved with a timestamp for easy identification. "
           + "Use this to persist your mock configurations for later use or sharing.";
   public static final String SUCCESS_MESSAGE = "Simulation file downloaded successfully";
