@@ -47,7 +47,7 @@ To use this server with an AI assistant that supports Model Context Protocol (MC
 
 - `8500`: Hoverfly proxy port (mocked services)
 - `8888`: Hoverfly admin port (mock control API)
-- `-v /path/to/your/data:/data`: Mount a volume for simulation persistence
+- `-v /path/to/your/data:/opt/hoverfly-mcp/simulation-data`: Mount a volume for simulation persistence
 
 > Make sure Docker is installed. The image will be pulled automatically if not available locally.
 
@@ -58,7 +58,7 @@ To use this server with an AI assistant that supports Model Context Protocol (MC
 | Tool Name                       | Description                                                      |
 |----------------------------------|------------------------------------------------------------------|
 | `get_hoverfly_status`              | Checks if Hoverfly is running                                    |
-| `start_hoverfly_web_server`        | Starts Hoverfly in simulate mode as a web server with optional auto-load of simulation from mounted volume |
+| `start_hoverfly_web_server`        | Starts Hoverfly in simulate mode as a web server. By default, it will auto-load the most recent simulation from `/opt/hoverfly-mcp/simulation-data` if available, unless auto-load is disabled. |
 | `stop_hoverfly_server`             | Stops Hoverfly and clears mocks                                  |
 | `fetch_hoverfly_version`           | Returns Hoverfly version                                         |
 | `list_hoverfly_mocks`              | Lists all active mock APIs (request-response pairs)              |
@@ -68,26 +68,30 @@ To use this server with an AI assistant that supports Model Context Protocol (MC
 | `get_hoverfly_documentation`       | Returns Hoverfly documentation for a specific topic              |
 | `suggest_hoverfly_matchers`        | Suggests matcher options for a given request-response pair JSON  |
 | `get_hoverfly_debug_logs`          | Fetches recent Hoverfly logs for debugging (limit is optional)   |
-| `download_hoverfly_simulation`     | Downloads current simulation to mounted volume                   |
+| `download_hoverfly_simulation`     | Downloads current simulation to `/opt/hoverfly-mcp/simulation-data` (persistent simulation directory) |
 
-These tools can be invoked programmatically by AI assistants through the MCP interface.
+These tools can be invoked programmatically by AI assistants through the AI Assistant host.
 
 ---
 
 ## 💾 Simulation Persistence
 
-The server supports automatic simulation persistence through mounted volumes:
+The server supports simulation persistence through a fixed, mounted volume:
 
 ### Auto-Load on Startup
-When starting Hoverfly with `start_hoverfly_web_server`, the server automatically:
-- Loads the most recent simulation file (if available)
-- Continues with a clean state if no simulation is found
+When starting Hoverfly with `start_hoverfly_web_server`, the server will by default:
+- Load the most recent simulation file from `/opt/hoverfly-mcp/simulation-data` (if available)
+- Start with a clean state if no simulation file is found
 
+You can disable auto-load by setting the appropriate parameter.
 
 ### Persistent Data and Volume Mounting
 
-For persistent simulation data, you must mount a host directory to `/opt/hoverfly-mcp/simulation-data` inside the container. This is the only supported location for persistent data.
+To persist simulation data across restarts, you **must** mount a host directory to `/opt/hoverfly-mcp/simulation-data` inside the container.  
+This is the only supported location for persistent data.  
+> **Note:** The host directory must be writable by the container user.
 
+Simulation files are only saved to this directory when you explicitly invoke the download tool.
 
 ## 🤝 Contributing
 

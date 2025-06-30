@@ -305,9 +305,9 @@ public class HoverflyService {
 
   /**
    * Downloads the current Hoverfly simulation file to the persistent simulation directory
-   * (`/opt/hoverfly-mcp/simulation-data`) inside the container.
-   * The file is saved with a timestamp for easy identification.
-   * To persist simulation data, ensure this directory is mounted to a host path.
+   * (`/opt/hoverfly-mcp/simulation-data`) inside the container. The file is saved with a timestamp
+   * for easy identification. To persist simulation data, ensure this directory is mounted to a host
+   * path.
    *
    * @return HoverflyResponse indicating success or failure.
    * @throws HoverflyClientException if Hoverfly is not running or healthy.
