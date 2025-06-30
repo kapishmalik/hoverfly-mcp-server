@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM amazoncorretto:17-alpine3.18
 
 # Create non-root user and set up application directory
 RUN addgroup -S hoverflymcp && \
