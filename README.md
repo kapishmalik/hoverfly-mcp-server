@@ -1,4 +1,6 @@
-![Hoverfly MCP Server Logo](./HoverflyMCPServer.png)
+<div align="center">
+  <img src="./HoverflyMCPServer.png" alt="Hoverfly MCP Server Logo" width="240"/>
+</div>
 
 # Hoverfly MCP Server
 
