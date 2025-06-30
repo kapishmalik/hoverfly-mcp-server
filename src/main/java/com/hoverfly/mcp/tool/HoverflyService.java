@@ -1,5 +1,8 @@
 package com.hoverfly.mcp.tool;
 
+import static com.hoverfly.mcp.tool.util.DownloadSimulationToolConstants.SIMULATION_DATA_DIR;
+import static com.hoverfly.mcp.tool.util.SimulationFileUtil.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoverfly.mcp.dto.HoverflyLogEntry;
@@ -17,6 +20,12 @@ import io.specto.hoverfly.junit.core.HoverflyConfig;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.RequestResponsePair;
 import io.specto.hoverfly.junit.core.model.Simulation;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
@@ -65,14 +74,20 @@ public class HoverflyService {
   }
 
   /**
-   * Starts the Hoverfly mock server in simulate mode as a web server.
+   * Starts the Hoverfly mock server in simulate mode as a web server. Can optionally load
+   * simulation from mounted volume on startup.
    *
+   * @param loadSimulationOnStartup Whether to load simulation from mounted volume on startup
+   *     (optional, defaults to true)
    * @return HoverflyResponse indicating whether Hoverfly was started or already running.
    */
   @Tool(
       name = "start_hoverfly_web_server",
       description = StartHoverflyAsWebServerToolConstants.DESCRIPTION)
-  public HoverflyResponse startHoverflyAsWebServer() {
+  public HoverflyResponse startHoverflyAsWebServer(
+      @ToolParam(
+              description = StartHoverflyAsWebServerToolConstants.LOAD_SIMULATION_PARAM_DESCRIPTION)
+          Boolean loadSimulationOnStartup) {
     if (hoverfly == null) {
       hoverfly =
           new Hoverfly(
@@ -84,7 +99,18 @@ public class HoverflyService {
                   .asWebServer(),
               HoverflyMode.SIMULATE);
       hoverfly.start();
-      return HoverflyResponse.ok(StartHoverflyAsWebServerToolConstants.STARTED_MESSAGE);
+
+      // Load simulation if requested (default to true if not specified)
+      boolean shouldLoad = loadSimulationOnStartup == null || loadSimulationOnStartup;
+      boolean loaded = false;
+      if (shouldLoad) {
+        loaded = loadSimulationFromMountedVolume();
+      }
+
+      return HoverflyResponse.ok(
+          loaded
+              ? StartHoverflyAsWebServerToolConstants.STARTED_WITH_SIMULATION_MESSAGE
+              : StartHoverflyAsWebServerToolConstants.STARTED_MESSAGE);
     }
     return HoverflyResponse.ok(StartHoverflyAsWebServerToolConstants.ALREADY_RUNNING_MESSAGE);
   }
@@ -126,7 +152,7 @@ public class HoverflyService {
    */
   @Tool(name = "list_hoverfly_mocks", description = ListAllMockApisToolConstants.DESCRIPTION)
   public Simulation listAllMockAPIs() {
-    validateIfHoverflyIsRunning();
+    ValidationUtil.validateIfHoverflyIsRunning(hoverfly);
     return hoverflyClient.getSimulation();
   }
 
@@ -142,7 +168,7 @@ public class HoverflyService {
       @ToolParam(description = CreateMockApiToolConstants.PARAM_DESCRIPTION)
           String requestResponseJson) {
 
-    validateIfHoverflyIsRunning();
+    ValidationUtil.validateIfHoverflyIsRunning(hoverfly);
     try {
       ValidationResult validationResult =
           requestResponsePairValidator.validate(requestResponseJson);
@@ -177,7 +203,7 @@ public class HoverflyService {
    */
   @Tool(name = "clear_hoverfly_mocks", description = RemoveAllMockedApisToolConstants.DESCRIPTION)
   public HoverflyResponse removeAllMockedAPIs() {
-    validateIfHoverflyIsRunning();
+    ValidationUtil.validateIfHoverflyIsRunning(hoverfly);
     try {
       hoverflyClient.deleteSimulation();
       return HoverflyResponse.ok(RemoveAllMockedApisToolConstants.SUCCESS_MESSAGE);
@@ -278,13 +304,82 @@ public class HoverflyService {
   }
 
   /**
-   * Throws an exception if Hoverfly is not running or not healthy.
+   * Downloads the current Hoverfly simulation file to a mounted volume. Automatically detects
+   * mounted volumes and saves to a directory ending with /hoverfly-data.
    *
+   * @return HoverflyResponse indicating success or failure.
    * @throws HoverflyClientException if Hoverfly is not running or healthy.
    */
-  private void validateIfHoverflyIsRunning() {
-    if (hoverfly == null || !hoverfly.isHealthy()) {
-      throw new HoverflyClientException(CommonErrorToolConstants.HOVERFLY_NOT_HEALTHY_MESSAGE);
+  @Tool(
+      name = "download_hoverfly_simulation",
+      description = DownloadSimulationToolConstants.DESCRIPTION)
+  public HoverflyResponse downloadSimulation() {
+    ValidationUtil.validateIfHoverflyIsRunning(hoverfly);
+    Path filePath = null;
+    try {
+      // Use the fixed data directory
+      Path dataDir = Paths.get(SIMULATION_DATA_DIR);
+      if (!Files.exists(dataDir)) {
+        Files.createDirectories(dataDir);
+      }
+      if (!Files.isWritable(dataDir)) {
+        return HoverflyResponse.error(
+            DownloadSimulationToolConstants.WRITE_FAILED_MESSAGE
+                + ": Data directory is not writable: "
+                + dataDir);
+      }
+
+      // Get simulation from Hoverfly
+      Simulation simulation = hoverflyClient.getSimulation();
+
+      // Generate filename with timestamp
+      String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN));
+      String filename = SIMULATION_FILE_PREFIX + timestamp + SIMULATION_FILE_EXTENSION;
+      filePath = dataDir.resolve(filename);
+
+      // Write simulation to file
+      SimulationFileUtil.writeSimulationToFile(simulation, filePath, objectMapper);
+
+      return HoverflyResponse.ok(
+          DownloadSimulationToolConstants.SUCCESS_MESSAGE + " to " + filePath.toString());
+
+    } catch (IOException e) {
+      return HoverflyResponse.error(
+          DownloadSimulationToolConstants.WRITE_FAILED_MESSAGE
+              + ": "
+              + e.getMessage()
+              + ". Failed to write to: "
+              + filePath
+              + ". Check if "
+              + SIMULATION_DATA_DIR
+              + " exists and is writable, and mount your persistent volume to this path.");
+    } catch (Exception e) {
+      return HoverflyResponse.error(
+          DownloadSimulationToolConstants.DOWNLOAD_FAILED_MESSAGE + ": " + e.getMessage());
+    }
+  }
+
+  /**
+   * Loads the most recent simulation file from the mounted volume.
+   *
+   * @return true if simulation was loaded successfully, false otherwise
+   */
+  private boolean loadSimulationFromMountedVolume() {
+    try {
+      Path dataDir = Paths.get(SIMULATION_DATA_DIR);
+      if (!Files.exists(dataDir) || !Files.isDirectory(dataDir)) {
+        return false;
+      }
+      Path latestSimulationFile = SimulationFileUtil.findLatestSimulationFile(dataDir);
+      if (latestSimulationFile == null) {
+        return false;
+      }
+      Simulation simulation =
+          SimulationFileUtil.readSimulationFromFile(latestSimulationFile, objectMapper);
+      hoverflyClient.setSimulation(simulation);
+      return true;
+    } catch (Exception e) {
+      return false;
     }
   }
 }

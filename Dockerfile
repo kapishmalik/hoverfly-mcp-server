@@ -4,6 +4,7 @@ FROM amazoncorretto:17-alpine3.18
 RUN addgroup -S hoverflymcp && \
     adduser -S -G hoverflymcp -h /opt/hoverfly-mcp hoverflymcp && \
     mkdir -p /opt/hoverfly-mcp && \
+    mkdir -p /opt/hoverfly-mcp/simulation-data && \
     chown -R hoverflymcp:hoverflymcp /opt/hoverfly-mcp
 
 # Copy the JAR
