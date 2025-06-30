@@ -1,3 +1,5 @@
+![Hoverfly MCP Server Logo](./HoverflyMCPServer.png)
+
 # Hoverfly MCP Server
 
 A **Spring Boot**-based **Model Context Protocol (MCP)** server that exposes [Hoverfly](https://hoverfly.io/) as a programmable tool for AI assistants like **Cursor**, **Claude Desktop**, **GitHub Copilot**, or any other assistant supporting MCP. It enables dynamic mocking of third-party APIs to unblock development and testing when external services are unavailable.
