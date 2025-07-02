@@ -10,6 +10,8 @@ A **Spring Boot**-based **Model Context Protocol (MCP)** server that exposes [Ho
 
 ## 🛠️ Installation
 
+> **Note:** The following prerequisites and build steps are only required if you want to contribute or build from source. For most users, using the Docker image is sufficient.
+
 ### Prerequisites
 
 - Java 17
@@ -21,8 +23,9 @@ A **Spring Boot**-based **Model Context Protocol (MCP)** server that exposes [Ho
 git clone <repository-url>
 cd hoverfly-mcp-server
 mvn clean package
-java -jar target/hoverfly-mcp-server-0.0.1-SNAPSHOT.jar
+java -jar target/hoverfly-mcp-server-<version>.jar
 ```
+> Replace `<version>` with the actual version of the JAR you built.
 
 ---
 
